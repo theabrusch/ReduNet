@@ -60,11 +60,13 @@ class ReduNet(nn.Sequential):
                 tau=0.1, 
                 init=False,
                 update=False,
-                loss=False):
+                loss=False, 
+                return_inputs = False):
 
         self._init_loss()
         self._inReduBlock = False
-        
+        if return_inputs:
+            outputs = []
         for layer_i, module in enumerate(self):
             # preprocess for redunet layers
             if self._isEnterReduBlock(layer_i, module):
@@ -96,7 +98,14 @@ class ReduNet(nn.Sequential):
             if self._isExitReduBlock(layer_i, module):
                 inputs = module.postprocess(inputs)
                 self._inReduBlock = False
-        return inputs
+            
+            if return_inputs and layer_i%10==0:
+                outputs.append(inputs.detach().cpu())
+                
+        if return_inputs:
+            return inputs.detach().cpu(), outputs
+        else:
+            return inputs
 
 
     def get_loss(self):

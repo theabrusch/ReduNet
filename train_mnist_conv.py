@@ -41,6 +41,24 @@ trainset, testset, num_classes = L.load_dataset(args.data, data_dir=args.data_di
 X_train, y_train = F.get_samples(trainset, args.samples)
 X_train, y_train = X_train.to(device), y_train.to(device)
 
+model = nn.Sequential(
+    nn.Conv2d(1, 16, 5, 1),
+    nn.ReLU(),
+    nn.Dropout2d(0.2),
+    nn.MaxPool2d(2, 2),
+    nn.Conv2d(16, 32, 5, 1),
+    nn.ReLU(),
+    nn.Dropout2d(0.2),
+    nn.MaxPool2d(2, 2),
+    nn.Flatten(),
+    nn.Linear(512, 10),
+    nn.Dropout(0.2),
+    nn.Linear(10, 5),
+    nn.Dropout(0.2),
+    nn.Linear(5, 10),
+)
+
+
 ## Architecture
 net = L.load_architecture(args.data, args.arch)
 net = net.to(device)

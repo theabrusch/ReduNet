@@ -56,7 +56,7 @@ ninja=1.10.1=py37h879752b_0
 numpy=1.19.1=py37h3b9f5b6_0
 numpy-base=1.19.1=py37hcfb5961_0
 olefile=0.46=py37_0
-opencv-python=4.4.0.44=pypi_0
+#opencv-python=4.4.0.44=pypi_0
 openh264=2.1.0=hd9629dc_0
 openssl=1.1.1k=h9ed2024_0
 opt_einsum=3.1.0=py_0
@@ -75,7 +75,7 @@ pyparsing=2.4.7=py_0
 pysocks=1.7.1=py37hecd8cb5_0
 python=3.7.9=h26836e1_0
 python-dateutil=2.8.1=py_0
-pytorch=1.8.0=py3.7_0
+#pytorch=1.8.0=py3.7_0
 pytz=2020.1=py_0
 pyzmq=19.0.2=py37hb1e8313_1
 readline=8.0=h1de35cc_0
@@ -87,8 +87,8 @@ six=1.15.0=py_0
 sqlite=3.33.0=hffcf06c_0
 threadpoolctl=2.1.0=pyh5ca1d4c_0
 tk=8.6.10=hb0a8c7a_0
-torchaudio=0.8.0=py37
-torchvision=0.9.0=py37_cpu
+#torchaudio=0.8.0=py37
+#torchvision=0.9.0=py37_cpu
 tornado=6.0.4=py37h1de35cc_1
 tqdm=4.50.2=py_0
 traitlets=5.0.5=py_0
