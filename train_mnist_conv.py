@@ -7,7 +7,6 @@ import lightning.pytorch as pl
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from lightning.pytorch.trainer import Trainer
 
-
 from redunet import *
 import evaluate
 import load as L
