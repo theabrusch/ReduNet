@@ -274,3 +274,5 @@ data/
 saved_models/
 transfer.sh
 transfer/
+
+lightning_logs/

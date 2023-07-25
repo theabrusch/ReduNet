@@ -1,0 +1,121 @@
+import argparse
+import os
+
+import torch
+import torch.nn as nn
+import wandb
+
+from redunet import *
+import evaluate
+import load as L
+import functional as F
+import utils
+import plot
+
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--data', type=str, required=False, help='choice of dataset', default='mnist2d')
+parser.add_argument('--arch', type=str, required=False, help='choice of architecture', default='lift2d_channels35_layers5')
+parser.add_argument('--samples', type=int, required=False, help="number of samples per update", default=1000)
+parser.add_argument('--tail', type=str, default='', help='extra information to add to folder name')
+parser.add_argument('--log', default=False, action='store_true', help='set to True if log to wandb')
+parser.add_argument('--load_model', default=False, action='store_true', help='set to True if load model')
+parser.add_argument('--model_dir', type=str, help='model directory')
+parser.add_argument('--save_dir', type=str, default='./saved_models/', help='base directory for saving.')
+parser.add_argument('--data_dir', type=str, default='./data/', help='base directory for saving.')
+
+parser.add_argument('--batch_size', type=int, default=100, help='batch size for evaluation')
+parser.add_argument('--learning_rate', type=float, default=1e-3, help='learning rate for training')
+parser.add_argument('--epochs', type=int, default=100, help='number of epochs for training')
+args = parser.parse_args()
+
+## CUDA
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
+if args.log:
+    if args.load_model:
+        group = 'ReduNet_init_bp'
+    else:
+        group = 'ReduNet_bp'
+    wandb.init(project='redunet', group = group, entity='redunet')
+    wandb.config.update(args)
+
+## Model Directory
+model_dir = os.path.join(args.save_dir, 
+                         'forward',
+                         f'{args.data}+{args.arch}',
+                         f'samples{args.samples}'
+                         f'{args.tail}')
+os.makedirs(model_dir, exist_ok=True)
+utils.save_params(model_dir, vars(args))
+print(model_dir)
+
+## Data
+trainset, testset, num_classes = L.load_dataset(args.data, data_dir=args.data_dir)
+X_train, y_train = F.get_samples(trainset, args.samples)
+X_train, y_train = X_train.to(device), y_train.to(device)
+train_dset = torch.utils.data.TensorDataset(X_train, y_train)
+train_loader = torch.utils.data.DataLoader(train_dset, batch_size=args.batch_size, shuffle=True, num_workers = 10)
+
+test_loader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, num_workers = 10)
+
+## Architecture
+net = L.load_architecture(args.data, args.arch)
+if args.load_model:
+    net = utils.load_ckpt(args.model_dir, 'model', net)
+
+channels = 1 if args.data == 'mnistvector' else 35
+
+classifier = nn.Sequential(
+    net, 
+    nn.Flatten(),
+    nn.Linear(channels*28*28, 10),
+    nn.Softmax(dim=1)
+)
+classifier.to(device)
+optimizer = torch.optim.AdamW(classifier.parameters(), lr=args.learning_rate, weight_decay=1e-4)
+
+## Training
+for epoch in range(args.epochs):
+    classifier.train()
+    train_loss = 0
+    for i, (X, y) in enumerate(train_loader):
+        X, y = X.to(device), y.to(device)
+        y_pred = classifier(X)
+        loss = nn.CrossEntropyLoss()(y_pred, y)
+        loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
+        train_loss += loss.item()
+    train_loss /= i+1
+    classifier.eval()
+    test_loss = 0
+    for i, (X, y) in enumerate(test_loader):
+        X, y = X.to(device), y.to(device)
+        y_pred = classifier(X)
+        loss = nn.CrossEntropyLoss()(y_pred, y)
+        test_loss += loss.item()
+    test_loss /= i+1
+    if args.log:
+        wandb.log({'train_loss': train_loss, 'test_loss': test_loss})
+    
+# evaluate model on test set
+classifier.eval()
+test_loss = 0
+correct = 0
+with torch.no_grad():
+    for X, y in test_loader:
+        X, y = X.to(device), y.to(device)
+        y_pred = classifier(X)
+        test_loss += nn.CrossEntropyLoss()(y_pred, y).item()
+        pred = y_pred.argmax(dim=1, keepdim=True)
+        correct += pred.eq(y.view_as(pred)).sum().item()
+# compute accuracy and log to wandb
+test_loss /= len(test_loader.dataset)
+accuracy = correct / len(test_loader.dataset)
+if args.log:
+    wandb.log({'test_loss': test_loss, 'accuracy': accuracy})
+
+# save model
+utils.save_ckpt(model_dir, 'model', classifier)
