@@ -30,7 +30,7 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 ## Model Directory
 model_dir = os.path.join(args.save_dir, 
                          'forward',
-                         f'{args.data}+{args.arch}',
+                         f'{args.data}+ch{args.channels}+l{args.layers}',
                          f'samples{args.samples}'
                          f'{args.tail}')
 os.makedirs(model_dir, exist_ok=True)

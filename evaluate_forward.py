@@ -15,6 +15,8 @@ import plot
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model_dir', type=str, help='model directory')
+parser.add_argument('--layers', type=int, required=False, help='choice of architecture', default=5)
+parser.add_argument('--channels', type=int, required=False, help='choice of architecture', default=35)
 parser.add_argument('--loss', default=False, action='store_true', help='set to True if plot loss')
 parser.add_argument('--trainsamples', type=int, default=None, help="number of train samples in each class")
 parser.add_argument('--testsamples', type=int, default=None, help="number of train samples in each class")
@@ -46,7 +48,7 @@ X_train, y_train = X_train.to(device), y_train.to(device)
 X_test, y_test = X_test.to(device), y_test.to(device)
 
 ## Architecture
-net = L.load_architecture(params['data'], params['arch'])
+net = L.load_architecture(args.data, args.channels, args.layers)
 net = utils.load_ckpt(args.model_dir, 'model', net)
 net = net.to(device)
 

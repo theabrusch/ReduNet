@@ -46,7 +46,7 @@ if args.log:
 ## Model Directory
 model_dir = os.path.join(args.save_dir, 
                          'backward',
-                         f'{args.data}+{args.arch}',
+                         f'{args.data}+ch{args.channels}+l{args.layers}',
                          f'samples{args.samples}'
                          f'{args.tail}')
 os.makedirs(model_dir, exist_ok=True)
