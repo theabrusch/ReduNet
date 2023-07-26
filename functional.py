@@ -9,6 +9,7 @@ import torchvision.datasets as datasets
 import torch.distributions as distributions
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as TF
+import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data._utils.collate import default_collate
 
@@ -65,11 +66,11 @@ def get_samples(dataset, num_samples, shuffle=False, batch_idx=0, seed=0, method
 
 def normalize(X, p=2):
     if isinstance(X, torch.Tensor):
-        norm = torch.linalg.norm(X.flatten(1), ord=p, axis=1)
-        norm = norm.clip(min=1e-8)
-        for _ in range(len(X.shape)-1):
-            norm = norm.unsqueeze(-1)
-        return X / norm
+        #norm = torch.linalg.norm(X.flatten(1), ord=p, axis=1)
+        #norm = norm.clip(min=1e-8)
+        #for _ in range(len(X.shape)-1):
+        #    norm = norm.unsqueeze(-1)
+        return F.normalize(X.flatten(1), p=p, dim=1, eps = 1e-8).reshape(X.shape)
     elif isinstance(X, np.ndarray):
         norm = np.linalg.norm(X.reshape(X.shape[0], -1), ord=p, axis=1)
         norm = np.clip(norm, a_min=1e-8, a_max=None)

@@ -276,3 +276,4 @@ transfer.sh
 transfer/
 
 lightning_logs/
+wandb/
