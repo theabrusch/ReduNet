@@ -113,11 +113,10 @@ with torch.no_grad():
         test_loss += nn.CrossEntropyLoss()(y_pred, y).item()
         pred = y_pred.argmax(dim=1, keepdim=True)
         correct += pred.eq(y.view_as(pred)).sum().item()
-# compute accuracy and log to wandb
-test_loss /= len(test_loader.dataset)
+
 accuracy = correct / len(test_loader.dataset)
 if args.log:
-    wandb.log({'test_loss': test_loss, 'accuracy': accuracy})
+    wandb.log({'accuracy': accuracy})
 else:
     print(f'Test set: Average loss: {test_loss}, Accuracy: {correct}/{len(test_loader.dataset)} ({accuracy})')
 
