@@ -18,7 +18,7 @@ PYTORCH_ENABLE_MPS_FALLBACK=1
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, required=False, help='choice of dataset', default='mnist2d')
 parser.add_argument('--arch', type=str, required=False, help='choice of architecture', default='lift2d_channels35_layers5')
-parser.add_argument('--samples', type=int, required=False, help="number of samples per update", default=1000)
+parser.add_argument('--samples', type=eval, required=False, help="number of samples per update", default=None)
 parser.add_argument('--tail', type=str, default='', help='extra information to add to folder name')
 parser.add_argument('--log', default=True, help='set to True if log to wandb')
 parser.add_argument('--load_model', default=False, help='set to True if load model')
