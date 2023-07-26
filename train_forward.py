@@ -16,7 +16,8 @@ import plot
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, required=False, help='choice of dataset', default='mnist2d')
-parser.add_argument('--arch', type=str, required=False, help='choice of architecture', default='lift2d_channels35_layers5')
+parser.add_argument('--layers', type=int, required=False, help='choice of architecture', default=5)
+parser.add_argument('--channels', type=int, required=False, help='choice of architecture', default=35)
 parser.add_argument('--samples', type=int, required=False, help="number of samples per update", default=1000)
 parser.add_argument('--tail', type=str, default='', help='extra information to add to folder name')
 parser.add_argument('--save_dir', type=str, default='./saved_models/', help='base directory for saving.')
@@ -42,7 +43,7 @@ X_train, y_train = F.get_samples(trainset, args.samples)
 X_train, y_train = X_train.to(device), y_train.to(device)
 
 ## Architecture
-net = L.load_architecture(args.data, args.arch)
+net = L.load_architecture(args.data, args.channels, args.layers)
 net = net.to(device)
 
 ## Training
