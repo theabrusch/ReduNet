@@ -43,7 +43,7 @@ if args.log:
 
 ## Model Directory
 model_dir = os.path.join(args.save_dir, 
-                         'forward',
+                         'backward',
                          f'{args.data}+{args.arch}',
                          f'samples{args.samples}'
                          f'{args.tail}')
