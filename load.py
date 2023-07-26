@@ -45,3 +45,12 @@ def load_dataset(choice, data_dir='./data/'):
         return mnistvector_10class(data_dir)
     raise NameError(f'Dataset {choice} not found.')
 
+
+def load_concepts(choice, data_dir='./data/'):
+    if choice == 'mnist2d':
+        from datasets.mnist import mnist2d_concepts
+        return mnist2d_concepts(data_dir)
+    if choice =='mnistvector':
+        from datasets.mnist import mnistvector_concepts
+        return mnistvector_concepts(data_dir)
+    raise NameError(f'Dataset {choice} not found.')
