@@ -86,7 +86,7 @@ class ReduNet(nn.Sequential):
             # If init is set to True, then initialize 
             # layer using inputs and labels
             if init and self._isReduLayer(module):
-                module.init(inputs, labels)
+                module.init(inputs, labels)    
 
             # If update is set to True, then initialize 
             # layer using inputs and labels
@@ -109,6 +109,8 @@ class ReduNet(nn.Sequential):
                 inputs = module.postprocess(inputs)
                 self._inReduBlock = False
             
+            if init:
+                module.to('cpu')
             if return_inputs:
                 outputs.append(inputs.detach().cpu().unsqueeze(0))
                 
