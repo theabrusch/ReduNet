@@ -40,9 +40,11 @@ class ReduNet(nn.Sequential):
                     module.zero()
         return self
 
-    def batch_forward(self, inputs, batch_size=1000, loss=False, cuda=True, device=None):
+    def batch_forward(self, inputs, batch_size=1000, loss=False, cuda=True, device=None, return_representations=False):
         # Perform forward pass in batches.
         outputs = []
+        if return_representations:
+            representations = []
         for i in range(0, inputs.shape[0], batch_size):
             print('batch:', i, end='\r')
             batch_inputs = inputs[i:i+batch_size]
@@ -50,9 +52,17 @@ class ReduNet(nn.Sequential):
                 batch_inputs = batch_inputs.to(device)
             elif cuda:
                 batch_inputs = batch_inputs.cuda()
-            batch_outputs = self.forward(batch_inputs, loss=loss)
-            outputs.append(batch_outputs.cpu())
-        return torch.cat(outputs)
+            batch_outputs = self.forward(batch_inputs, loss=loss, return_inputs=return_representations)
+            if return_representations:
+                batch_outputs, batch_reps = batch_outputs
+                outputs.append(batch_inputs)
+                representations.append(batch_reps.cpu())
+            else:
+                outputs.append(batch_outputs.cpu())
+        if return_representations:
+            return torch.cat(outputs), torch.cat(representations, dim=1)
+        else:
+            return torch.cat(outputs)
 
     def forward(self,
                 inputs, 
@@ -99,11 +109,11 @@ class ReduNet(nn.Sequential):
                 inputs = module.postprocess(inputs)
                 self._inReduBlock = False
             
-            if return_inputs and layer_i%10==0:
-                outputs.append(inputs.detach().cpu())
+            if return_inputs:
+                outputs.append(inputs.detach().cpu().unsqueeze(0))
                 
         if return_inputs:
-            return inputs.detach().cpu(), outputs
+            return inputs.detach().cpu(), torch.cat(outputs)
         else:
             return inputs
 

@@ -14,14 +14,17 @@ import plot
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_dir', type=str, help='model directory')
+parser.add_argument('--model_dir', type=str, help='model directory', default = './saved_models/forward/mnistvector+ch1+l5/samples100')
 parser.add_argument('--layers', type=int, required=False, help='choice of architecture', default=5)
 parser.add_argument('--channels', type=int, required=False, help='choice of architecture', default=35)
 parser.add_argument('--loss', default=False, action='store_true', help='set to True if plot loss')
-parser.add_argument('--trainsamples', type=int, default=None, help="number of train samples in each class")
+parser.add_argument('--save_representations', type=eval, default='True', help='set to True if save representations')
+parser.add_argument('--trainsamples', type=int, default=100, help="number of train samples in each class")
 parser.add_argument('--testsamples', type=int, default=None, help="number of train samples in each class")
 parser.add_argument('--translatetrain', default=False, action='store_true', help='set to True if translation train samples')
 parser.add_argument('--translatetest', default=False, action='store_true', help='set to True if translation test samples')
+
+parser.add_argument('--data_dir', type=str, default='/Users/theb/Desktop/representations', help='base directory for saving.')
 parser.add_argument('--batch_size', type=int, default=100, help='batch size for evaluation')
 args = parser.parse_args()
 
@@ -34,6 +37,9 @@ eval_dir = os.path.join(args.model_dir,
                         f'_testsamples{args.testsamples}'
                         f'_translatetrain{args.translatetrain}'
                         f'_translatetest{args.translatetest}')
+data_dir = os.path.join(args.data_dir,
+                        f'trainsamples{args.trainsamples}'
+                        f'_testsamples{args.testsamples}')
 params = utils.load_params(args.model_dir)
 
 ## Data
@@ -55,12 +61,18 @@ net = net.to(device)
 ## Forward
 with torch.no_grad():
     print('train')
-    Z_train = net.batch_forward(X_train, batch_size=args.batch_size, loss=args.loss, device=device)
+    Z_train = net.batch_forward(X_train, batch_size=args.batch_size, loss=args.loss, device=device, return_representations=args.save_representations)
+    if args.save_representations:
+        Z_train, representations = Z_train
+        utils.save_representations(data_dir, 'train', representations.numpy(), labels=y_train.numpy())
     X_train, y_train, Z_train = F.to_cpu(X_train, y_train, Z_train)
     utils.save_loss(eval_dir, f'train', net.get_loss())
 
     print('test')
-    Z_test = net.batch_forward(X_test, batch_size=args.batch_size, loss=args.loss, device=device)
+    Z_test = net.batch_forward(X_test, batch_size=args.batch_size, loss=args.loss, device=device, return_representations=args.save_representations)
+    if args.save_representations:
+        Z_test, representations = Z_test
+        utils.save_representations(data_dir, 'test', representations.numpy(), labels=y_test.numpy())
     X_test, y_test, Z_test = F.to_cpu(X_test, y_test, Z_test)
     utils.save_loss(eval_dir, f'test', net.get_loss())
 

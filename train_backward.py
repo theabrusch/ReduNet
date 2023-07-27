@@ -123,4 +123,4 @@ else:
     print(f'Test set: Average loss: {test_loss}, Accuracy: {correct}/{len(test_loader.dataset)} ({accuracy})')
 
 # save model
-utils.save_ckpt(model_dir, 'model', classifier)
+utils.save_ckpt(model_dir, 'model', classifier[0])

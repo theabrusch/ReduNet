@@ -90,6 +90,16 @@ def save_features(model_dir, name, features, labels, layer=None):
     np.save(os.path.join(save_dir, f"{name}_features.npy"), features)
     np.save(os.path.join(save_dir, f"{name}_labels.npy"), labels)
 
+def save_representations(data_dir, name, representations, labels):
+    save_dir = os.path.join(data_dir, "representations")
+    os.makedirs(save_dir, exist_ok=True)
+    np.save(os.path.join(save_dir, f"{name}_labels.npy"), labels)
+
+    for layer in range(representations.shape[0]):
+        layer_dir = os.path.join(save_dir, f"layer{layer}")
+        os.makedirs(layer_dir, exist_ok=True)
+        np.save(os.path.join(layer_dir, f"{name}_representations.npy"), representations[layer])
+    
 def save_ckpt(model_dir, name, net):
     """Save PyTorch checkpoint to model_dir/checkpoints/ directory in model directory. """
     os.makedirs(os.path.join(model_dir, 'checkpoints'), exist_ok=True)
