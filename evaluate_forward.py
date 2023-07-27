@@ -64,7 +64,7 @@ with torch.no_grad():
     Z_train = net.batch_forward(X_train, batch_size=args.batch_size, loss=args.loss, device=device, return_representations=args.save_representations)
     if args.save_representations:
         Z_train, representations = Z_train
-        utils.save_representations(data_dir, 'train', representations.numpy(), labels=y_train.numpy())
+        utils.save_representations(data_dir, 'train', representations.numpy(), labels=y_train.cpu().numpy())
     X_train, y_train, Z_train = F.to_cpu(X_train, y_train, Z_train)
     utils.save_loss(eval_dir, f'train', net.get_loss())
 
@@ -72,7 +72,7 @@ with torch.no_grad():
     Z_test = net.batch_forward(X_test, batch_size=args.batch_size, loss=args.loss, device=device, return_representations=args.save_representations)
     if args.save_representations:
         Z_test, representations = Z_test
-        utils.save_representations(data_dir, 'test', representations.numpy(), labels=y_test.numpy())
+        utils.save_representations(data_dir, 'test', representations.numpy(), labels=y_test.cpu().numpy())
     X_test, y_test, Z_test = F.to_cpu(X_test, y_test, Z_test)
     utils.save_loss(eval_dir, f'test', net.get_loss())
 
