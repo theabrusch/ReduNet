@@ -17,6 +17,7 @@ PYTORCH_ENABLE_MPS_FALLBACK=1
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, required=False, help='choice of dataset', default='mnist2d')
+parser.add_argument('--mnist_binary', type=eval, default='True', help='set to True if mnist binary')
 parser.add_argument('--layers', type=int, required=False, help='choice of architecture', default=5)
 parser.add_argument('--channels', type=int, required=False, help='choice of architecture', default=16)
 
@@ -46,7 +47,7 @@ if args.log:
 ## Model Directory
 model_dir = os.path.join(args.save_dir, 
                          'backward',
-                         f'{args.data}+ch{args.channels}+l{args.layers}',
+                         f'{args.data}+ch{args.channels}+l{args.layers}' if not args.mnist_binary else f'{args.data}+ch{args.channels}+l{args.layers}+binary',
                          f'samples{args.samples}'
                          f'{args.tail}')
 os.makedirs(model_dir, exist_ok=True)
@@ -68,11 +69,12 @@ if args.load_model:
     net = utils.load_ckpt(args.model_dir, 'model', net)
 
 channels = 1 if args.data == 'mnistvector' else args.channels
+num_classes = 2 if args.mnist_binary else num_classes
 
 classifier = nn.Sequential(
     net, 
     nn.Flatten(),
-    nn.Linear(channels*28*28, 10),
+    nn.Linear(channels*28*28, num_classes),
     nn.Softmax(dim=1)
 )
 classifier.to(device)
