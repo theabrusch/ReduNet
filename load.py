@@ -18,19 +18,19 @@ import functional as F
 from redunet import *
 
 
-def load_architecture(data, channels, layers, seed=0):
+def load_architecture(data, channels, layers, num_classes = 10, seed=0):
     if data == 'mnist2d':
         from architectures.mnist.lift2d import lift2d
-        return lift2d(channels=channels, layers=layers, num_classes=10, seed=seed)
+        return lift2d(channels=channels, layers=layers, num_classes=num_classes, seed=seed)
     if data == 'mnist2d_2class':
         from architectures.mnist.lift2d import lift2d
-        return lift2d(channels=channels, layers=layers, num_classes=2, seed=seed)
+        return lift2d(channels=channels, layers=layers, num_classes=num_classes, seed=seed)
     if data == 'mnistvector':
         from architectures.mnist.flatten import flatten
-        return flatten(layers=layers, num_classes=10)
+        return flatten(layers=layers, num_classes=num_classes)
     if data == 'mnistvector_2class':
         from architectures.mnist.flatten import flatten
-        return flatten(layers=layers, num_classes=2)   
+        return flatten(layers=layers, num_classes=num_classes)   
     raise NameError('Cannot find architecture: {}.')
 
 def load_dataset(choice, data_dir='./data/'):

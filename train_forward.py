@@ -43,8 +43,10 @@ trainset, testset, num_classes = L.load_dataset(args.data, data_dir=args.data_di
 X_train, y_train = F.get_samples(trainset, args.samples, binary = args.mnist_binary)
 X_train, y_train = X_train.to(device), y_train.to(device)
 
+if args.mnist_binary:
+    num_classes = 2
 ## Architecture
-net = L.load_architecture(args.data, args.channels, args.layers)
+net = L.load_architecture(args.data, args.channels, args.layers, num_classes=num_classes)
 net = net.to(device)
 
 ## Training
