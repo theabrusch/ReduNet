@@ -17,6 +17,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model_dir', type=str, help='model directory', default = './saved_models/forward/mnistvector+ch1+l5/samples100')
 parser.add_argument('--layers', type=int, required=False, help='choice of architecture', default=5)
 parser.add_argument('--channels', type=int, required=False, help='choice of architecture', default=35)
+parser.add_argument('--mnist_binary', type = eval, default=False, help='set to True if mnist binary')
+
 parser.add_argument('--loss', default=False, action='store_true', help='set to True if plot loss')
 parser.add_argument('--save_representations', type=eval, default='True', help='set to True if save representations')
 parser.add_argument('--trainsamples', type=int, default=100, help="number of train samples in each class")
@@ -44,8 +46,8 @@ params = utils.load_params(args.model_dir)
 
 ## Data
 trainset, testset, num_classes = L.load_dataset(params['data'], data_dir=params['data_dir'])
-X_train, y_train = F.get_samples(trainset, args.trainsamples)
-X_test, y_test = F.get_samples(testset, args.testsamples)
+X_train, y_train = F.get_samples(trainset, args.trainsamples, binary = args.mnist_binary)
+X_test, y_test = F.get_samples(testset, args.testsamples, binary = args.mnist_binary)
 if args.translatetrain:
     X_train, y_train = F.translate(X_train, y_train, stride=7)
 if args.translatetest:
