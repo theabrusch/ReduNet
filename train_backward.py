@@ -55,8 +55,8 @@ utils.save_params(model_dir, vars(args))
 print(model_dir)
 
 ## Data
-trainset, testset, num_classes = L.load_dataset(args.data, data_dir=args.data_dir)
-X_train, y_train = F.get_samples(trainset, args.samples)
+trainset, testset, num_classes = L.load_dataset(args.data, data_dir=args.data_dir, )
+X_train, y_train = F.get_samples(trainset, args.samples, binary=args.mnist_binary)
 X_train, y_train = X_train.to(device), y_train.to(device)
 train_dset = torch.utils.data.TensorDataset(X_train, y_train)
 train_loader = torch.utils.data.DataLoader(train_dset, batch_size=args.batch_size, shuffle=True)
