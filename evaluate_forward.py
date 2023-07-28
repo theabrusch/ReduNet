@@ -54,7 +54,9 @@ X_train, y_train = X_train.to(device), y_train.to(device)
 X_test, y_test = X_test.to(device), y_test.to(device)
 
 ## Architecture
-net = L.load_architecture(params['data'], params['channels'], params['layers'])
+if params['mnist_binary']:
+    num_classes = 2
+net = L.load_architecture(params['data'], params['channels'], params['layers'], num_classes=num_classes)
 net = utils.load_ckpt(args.model_dir, 'model', net)
 net = net.to(device)
 
