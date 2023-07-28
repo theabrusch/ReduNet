@@ -97,6 +97,8 @@ for epoch in range(args.epochs):
     test_loss = 0
     for i, (X, y) in enumerate(test_loader):
         X, y = X.to(device), y.to(device)
+        if args.mnist_binary:
+            y = (y > 4).long()
         y_pred = classifier(X)
         loss = nn.CrossEntropyLoss()(y_pred, y)
         test_loss += loss.item()
