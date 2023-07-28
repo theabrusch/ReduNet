@@ -62,9 +62,10 @@ train_dset = torch.utils.data.TensorDataset(X_train, y_train)
 train_loader = torch.utils.data.DataLoader(train_dset, batch_size=args.batch_size, shuffle=True)
 
 test_loader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size)
-
+if args.mnist_binary:
+    num_classes = 2
 ## Architecture
-net = L.load_architecture(args.data, args.channels, args.layers)
+net = L.load_architecture(args.data, args.channels, args.layers, num_classes= num_classes)
 if args.load_model:
     net = utils.load_ckpt(args.model_dir, 'model', net)
 
