@@ -46,7 +46,7 @@ def get_features(net, trainloader, verbose=True, n=None, device='cpu'):
                 break
     return torch.cat(features)[:n], torch.cat(labels)[:n]
 
-def get_samples(dataset, num_samples, shuffle=False, batch_idx=0, seed=0, method='uniform'):
+def get_samples(dataset, num_samples, binary = False, shuffle=False, batch_idx=0, seed=0, method='uniform'):
     if method == 'uniform':
         np.random.seed(seed)
         dataloader = DataLoader(dataset, batch_size=dataset.data.shape[0])
@@ -56,6 +56,9 @@ def get_samples(dataset, num_samples, shuffle=False, batch_idx=0, seed=0, method
             X, y = X[idx_arr], y[idx_arr]
         if num_samples is not None:
             X, y = get_n_each(X, y, num_samples, batch_idx)
+        if binary:
+            # create binary labels, above and 4 or lower
+            y = (y > 4).long()
         X, y = X.float(), y.long()
         if len(X.shape) == 3:
             X = X.unsqueeze(1)

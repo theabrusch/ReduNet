@@ -16,6 +16,7 @@ import plot
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, required=False, help='choice of dataset', default='mnist2d')
+parser.add_argument('--mnist_binary', type=eval, default='True', help='set to True if mnist binary')
 parser.add_argument('--layers', type=int, required=False, help='choice of architecture', default=5)
 parser.add_argument('--channels', type=int, required=False, help='choice of architecture', default=35)
 parser.add_argument('--samples', type=int, required=False, help="number of samples per update", default=1000)
@@ -39,7 +40,7 @@ print(model_dir)
 
 ## Data
 trainset, testset, num_classes = L.load_dataset(args.data, data_dir=args.data_dir)
-X_train, y_train = F.get_samples(trainset, args.samples)
+X_train, y_train = F.get_samples(trainset, args.samples, binary = args.mnist_binary)
 X_train, y_train = X_train.to(device), y_train.to(device)
 
 ## Architecture
