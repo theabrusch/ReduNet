@@ -16,7 +16,7 @@ PYTORCH_ENABLE_MPS_FALLBACK=1
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data', type=str, required=False, help='choice of dataset', default='mnist2d')
+parser.add_argument('--data', type=str, required=False, help='choice of dataset', default='mnistvector')
 parser.add_argument('--mnist_binary', type=eval, default='True', help='set to True if mnist binary')
 parser.add_argument('--layers', type=int, required=False, help='choice of architecture', default=5)
 parser.add_argument('--channels', type=int, required=False, help='choice of architecture', default=16)
@@ -113,6 +113,8 @@ correct = 0
 with torch.no_grad():
     for X, y in test_loader:
         X, y = X.to(device), y.to(device)
+        if args.mnist_binary:
+            y = (y > 4).long()
         y_pred = classifier(X)
         test_loss += nn.CrossEntropyLoss()(y_pred, y).item()
         pred = y_pred.argmax(dim=1, keepdim=True)
